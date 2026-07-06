@@ -67,6 +67,21 @@ export default function ClickerGame() {
     return () => clearTimeout(timeout);
   }, [score, totalEarned, clickPower, autoRate, upgradeLevels]);
 
+  // Listen for score deductions from spin wheel
+  useEffect(() => {
+    function onScoreUpdate() {
+      try {
+        const saved = localStorage.getItem("chadsem-clicker");
+        if (saved) {
+          const data = JSON.parse(saved);
+          setScore(data.score || 0);
+        }
+      } catch {}
+    }
+    window.addEventListener("chadsem-score-update", onScoreUpdate);
+    return () => window.removeEventListener("chadsem-score-update", onScoreUpdate);
+  }, []);
+
   // Auto-earn
   useEffect(() => {
     if (autoRate <= 0) return;

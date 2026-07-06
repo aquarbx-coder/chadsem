@@ -7,6 +7,11 @@ const CursorTrail = dynamic(() => import("./components/CursorTrail"), { ssr: fal
 const ScrollProgress = dynamic(() => import("./components/ScrollProgress"), { ssr: false });
 const ClickerGame = dynamic(() => import("./components/ClickerGame"), { ssr: false });
 const SpinWheel = dynamic(() => import("./components/SpinWheel"), { ssr: false });
+const Typewriter = dynamic(() => import("./components/Typewriter"), { ssr: false });
+const TiltCard = dynamic(() => import("./components/TiltCard"), { ssr: false });
+const AnimatedCounter = dynamic(() => import("./components/AnimatedCounter"), { ssr: false });
+const HoverGrid = dynamic(() => import("./components/HoverGrid"), { ssr: false });
+import { useConfetti } from "./components/ConfettiBurst";
 
 const CA = "HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
 const PUMP_URL =
@@ -93,6 +98,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
 
   const [activeGame, setActiveGame] = useState<"clicker" | "wheel">("clicker");
+  const confetti = useConfetti();
 
   const statsSection = useInView();
   const aboutSection = useInView();
@@ -248,8 +254,8 @@ export default function Home() {
             <span className="text-white">SEM</span>
           </h1>
 
-          <p className="animate-fade-up delay-200 text-xl sm:text-2xl text-gray-400 mb-2 font-medium">
-            The community memecoin honoring the king of Solana calls.
+          <p className="animate-fade-up delay-200 text-lg sm:text-2xl text-gray-400 mb-2 font-medium min-h-[2em]">
+            <Typewriter />
           </p>
           <p className="animate-fade-up delay-300 text-sm text-gray-500 mb-10 max-w-lg lg:mx-0 mx-auto">
             Built by degens, for degens. No insiders, no presale, no BS.
@@ -261,6 +267,7 @@ export default function Home() {
               href={PUMP_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => confetti(e.clientX, e.clientY)}
               className="cta-pulse px-8 py-4 bg-chad-green text-black font-bold rounded-xl hover:bg-chad-green/90 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)] transition-all text-lg"
             >
               Buy $CHADSEM
@@ -313,6 +320,32 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ==================== ANIMATED NUMBERS BAR ==================== */}
+      <section className="py-16 px-6 relative overflow-hidden" style={{ background: "#0c0c14" }}>
+        <HoverGrid />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { end: 1000000000, prefix: "", suffix: "", label: "Total Supply", display: "1B" },
+              { end: 100, prefix: "", suffix: "%", label: "Community Owned" },
+              { end: 0, prefix: "", suffix: "", label: "Team Tokens", display: "0" },
+              { end: 0, prefix: "", suffix: "", label: "Presale Tokens", display: "0" },
+            ].map((item, i) => (
+              <div key={item.label} className="animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <p className="text-3xl sm:text-4xl font-black text-white stat-value mb-1">
+                  {item.display !== undefined ? (
+                    item.display
+                  ) : (
+                    <AnimatedCounter end={item.end} prefix={item.prefix} suffix={item.suffix} />
+                  )}
+                </p>
+                <p className="text-gray-500 text-sm">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ==================== LIVE STATS ==================== */}
       <section
@@ -404,35 +437,39 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-slide-left delay-300" : "opacity-0"}`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
-                  <span className="text-chad-green text-lg font-black">01</span>
+            <TiltCard className={`${aboutSection.visible ? "animate-slide-left delay-300" : "opacity-0"}`}>
+              <div className="bg-chad-card rounded-2xl p-8 border-glow card-glow relative overflow-hidden group h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
+                    <span className="text-chad-green text-lg font-black">01</span>
+                  </div>
+                  <h3 className="text-chad-green font-bold text-xl mb-3">The guy who called SOL before everyone</h3>
+                  <p className="text-gray-400 leading-relaxed">
+                    While CT was sleeping on Solana, Ansem was already deep in it. He called the SOL run before most
+                    people even had a Phantom wallet. His timeline became required reading for anyone trying to catch
+                    the next move. Not a guesser &mdash; the man had conviction and the receipts to prove it.
+                  </p>
                 </div>
-                <h3 className="text-chad-green font-bold text-xl mb-3">The guy who called SOL before everyone</h3>
-                <p className="text-gray-400 leading-relaxed">
-                  While CT was sleeping on Solana, Ansem was already deep in it. He called the SOL run before most
-                  people even had a Phantom wallet. His timeline became required reading for anyone trying to catch
-                  the next move. Not a guesser &mdash; the man had conviction and the receipts to prove it.
-                </p>
               </div>
-            </div>
+            </TiltCard>
 
-            <div className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-slide-right delay-400" : "opacity-0"}`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
-                  <span className="text-chad-green text-lg font-black">02</span>
+            <TiltCard className={`${aboutSection.visible ? "animate-slide-right delay-400" : "opacity-0"}`}>
+              <div className="bg-chad-card rounded-2xl p-8 border-glow card-glow relative overflow-hidden group h-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
+                    <span className="text-chad-green text-lg font-black">02</span>
+                  </div>
+                  <h3 className="text-chad-green font-bold text-xl mb-3">Put thousands of people on</h3>
+                  <p className="text-gray-400 leading-relaxed">
+                    Ansem didn&apos;t gatekeep. He shared his plays, broke down his thinking, and brought
+                    an entire generation of traders into Solana. People made life-changing money because
+                    they followed his calls. That&apos;s not influence &mdash; that&apos;s impact.
+                  </p>
                 </div>
-                <h3 className="text-chad-green font-bold text-xl mb-3">Put thousands of people on</h3>
-                <p className="text-gray-400 leading-relaxed">
-                  Ansem didn&apos;t gatekeep. He shared his plays, broke down his thinking, and brought
-                  an entire generation of traders into Solana. People made life-changing money because
-                  they followed his calls. That&apos;s not influence &mdash; that&apos;s impact.
-                </p>
               </div>
-            </div>
+            </TiltCard>
 
             <div className={`md:col-span-2 bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-fade-up delay-500" : "opacity-0"}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -783,6 +820,7 @@ export default function Home() {
               href={PUMP_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => confetti(e.clientX, e.clientY)}
               className="cta-pulse inline-block px-10 py-5 bg-chad-green text-black font-bold rounded-xl hover:bg-chad-green/90 hover:shadow-[0_0_40px_rgba(0,255,136,0.3)] transition-all text-xl"
             >
               Buy $CHADSEM Now

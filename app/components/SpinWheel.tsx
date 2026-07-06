@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 const SEGMENTS = [
   { label: "Diamond Hands", rarity: "common" },
-  { label: "1000x Incoming", rarity: "common" },
+  { label: "1000x", rarity: "common" },
   { label: "WAGMI", rarity: "common" },
-  { label: "Trench Veteran", rarity: "uncommon" },
-  { label: "Ansem Approved", rarity: "rare" },
+  { label: "Trench Vet", rarity: "uncommon" },
+  { label: "Ansem Pick", rarity: "rare" },
   { label: "Paper Hands", rarity: "common" },
-  { label: "To The Moon", rarity: "common" },
-  { label: "Chad Status", rarity: "rare" },
+  { label: "Moon", rarity: "common" },
+  { label: "Chad", rarity: "rare" },
   { label: "NGMI", rarity: "common" },
-  { label: "Whale Alert", rarity: "uncommon" },
-  { label: "Legendary Degen", rarity: "legendary" },
+  { label: "Whale", rarity: "uncommon" },
+  { label: "LEGEND", rarity: "legendary" },
   { label: "Rug Survivor", rarity: "uncommon" },
 ];
+
+const SPIN_COST = 50;
 
 const RARITY_COLORS: Record<string, string> = {
   common: "text-gray-400",
@@ -68,19 +70,59 @@ export default function SpinWheel() {
   });
   const [showCollection, setShowCollection] = useState(false);
 
+  // Read clicker score
+  const getClickerScore = useCallback(() => {
+    try {
+      const saved = localStorage.getItem("chadsem-clicker");
+      if (saved) return JSON.parse(saved).score || 0;
+    } catch {}
+    return 0;
+  }, []);
+
+  const deductScore = useCallback((amount: number) => {
+    try {
+      const saved = localStorage.getItem("chadsem-clicker");
+      if (saved) {
+        const data = JSON.parse(saved);
+        data.score = Math.max(0, (data.score || 0) - amount);
+        localStorage.setItem("chadsem-clicker", JSON.stringify(data));
+        // Dispatch event so clicker component can update
+        window.dispatchEvent(new Event("chadsem-score-update"));
+      }
+    } catch {}
+  }, []);
+
   function spin() {
     if (spinning) return;
+
+    const currentScore = getClickerScore();
+    if (currentScore < SPIN_COST) return;
+
+    // Deduct cost
+    deductScore(SPIN_COST);
 
     setSpinning(true);
     setShowResult(false);
     setResult(null);
 
-    const extraSpins = 5 + Math.random() * 3;
     const targetSegment = Math.floor(Math.random() * NUM);
-    // The pointer is at the top (12 o'clock). We need the middle of the target segment to land there.
-    const targetAngle = 360 - (targetSegment * SEG_ANGLE + SEG_ANGLE / 2);
-    const totalRotation = rotation + extraSpins * 360 + targetAngle;
 
+    // Calculate rotation: pointer is at top (0 deg).
+    // Segment i occupies from i*SEG_ANGLE to (i+1)*SEG_ANGLE.
+    // We want the center of targetSegment at the top.
+    // Center of segment i is at i*SEG_ANGLE + SEG_ANGLE/2.
+    // To bring that to the top we need to rotate by -(center angle) mod 360.
+    const centerAngle = targetSegment * SEG_ANGLE + SEG_ANGLE / 2;
+    const normalizedTarget = (360 - centerAngle + 360) % 360;
+
+    // Add full spins so it always goes forward
+    const fullSpins = 5 + Math.floor(Math.random() * 3);
+    // Current effective rotation
+    const currentNormalized = rotation % 360;
+    let delta = normalizedTarget - currentNormalized;
+    if (delta < 0) delta += 360;
+
+    const totalRotation = rotation + fullSpins * 360 + delta;
     setRotation(totalRotation);
 
     setTimeout(() => {
@@ -101,10 +143,21 @@ export default function SpinWheel() {
   const CX = SIZE / 2;
   const CY = SIZE / 2;
   const R = SIZE / 2 - 4;
-  const TEXT_R = R * 0.65;
+  const TEXT_R = R * 0.62;
+
+  const clickerScore = typeof window !== "undefined" ? getClickerScore() : 0;
+  const canAfford = clickerScore >= SPIN_COST;
 
   return (
     <div className="max-w-3xl mx-auto relative z-10 text-center">
+      {/* Cost indicator */}
+      <p className="text-gray-500 text-sm mb-6">
+        Cost: <span className="text-chad-green font-bold">{SPIN_COST} clicker pts</span> per spin
+        {!canAfford && !spinning && (
+          <span className="text-red-400 ml-2">(earn more in the clicker!)</span>
+        )}
+      </p>
+
       <div className="relative inline-block mb-8">
         {/* Pointer */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-20">
@@ -120,7 +173,6 @@ export default function SpinWheel() {
           }}
         >
           <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full h-full">
-            {/* Outer ring */}
             <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(0,255,136,0.2)" strokeWidth="3" />
 
             {SEGMENTS.map((seg, i) => {
@@ -129,27 +181,19 @@ export default function SpinWheel() {
               const midAngle = startAngle + SEG_ANGLE / 2;
               const isEven = i % 2 === 0;
 
-              // Text runs radially — position along the middle of the segment,
-              // rotated so it reads from center outward
-              const textPos = polarToCart(CX, CY, TEXT_R, midAngle);
-              // Rotate text so it points outward along the radius
-              const textRotation = midAngle;
-
               return (
                 <g key={i}>
-                  {/* Segment slice */}
                   <path
                     d={describeArc(CX, CY, R, startAngle, endAngle)}
                     fill={isEven ? "#12121a" : "#1a1a2a"}
                     stroke="rgba(0,255,136,0.12)"
                     strokeWidth="0.5"
                   />
-                  {/* Label — rotated radially so text runs outward from center */}
                   <text
                     x={CX}
                     y={CY - TEXT_R}
                     fill={RARITY_FILL[seg.rarity]}
-                    fontSize="8"
+                    fontSize="7.5"
                     fontWeight="bold"
                     textAnchor="middle"
                     dominantBaseline="central"
@@ -161,17 +205,8 @@ export default function SpinWheel() {
               );
             })}
 
-            {/* Center circle */}
             <circle cx={CX} cy={CY} r="32" fill="#0a0a0f" stroke="rgba(0,255,136,0.3)" strokeWidth="2" />
-            <text
-              x={CX}
-              y={CY}
-              fill="#00ff88"
-              fontSize="11"
-              fontWeight="900"
-              textAnchor="middle"
-              dominantBaseline="central"
-            >
+            <text x={CX} y={CY} fill="#00ff88" fontSize="11" fontWeight="900" textAnchor="middle" dominantBaseline="central">
               SPIN
             </text>
           </svg>
@@ -182,14 +217,14 @@ export default function SpinWheel() {
       <div className="mb-6">
         <button
           onClick={spin}
-          disabled={spinning}
+          disabled={spinning || !canAfford}
           className={`px-8 py-4 rounded-xl font-bold text-lg transition-all ${
-            spinning
+            spinning || !canAfford
               ? "bg-gray-700 text-gray-400 cursor-not-allowed"
               : "bg-chad-green text-black hover:bg-chad-green/90 cta-pulse cursor-pointer"
           }`}
         >
-          {spinning ? "Spinning..." : "Spin the Wheel"}
+          {spinning ? "Spinning..." : !canAfford ? `Need ${SPIN_COST} pts` : `Spin (${SPIN_COST} pts)`}
         </button>
       </div>
 
@@ -201,9 +236,7 @@ export default function SpinWheel() {
           } animate-fade-scale`}
         >
           <p className="text-xs text-gray-500 mb-1 uppercase tracking-widest">{result.rarity}</p>
-          <p className={`text-xl font-black ${RARITY_COLORS[result.rarity]}`}>
-            {result.label}
-          </p>
+          <p className={`text-xl font-black ${RARITY_COLORS[result.rarity]}`}>{result.label}</p>
         </div>
       )}
 
@@ -213,8 +246,7 @@ export default function SpinWheel() {
           onClick={() => setShowCollection(!showCollection)}
           className="text-sm text-gray-500 hover:text-chad-green transition-colors"
         >
-          Collection: {collection.length}/{NUM} badges{" "}
-          {showCollection ? "\u25B2" : "\u25BC"}
+          Collection: {collection.length}/{NUM} badges {showCollection ? "\u25B2" : "\u25BC"}
         </button>
 
         {showCollection && (
