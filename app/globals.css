@@ -6,6 +6,10 @@
   scroll-behavior: smooth;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   background: #0a0a0f;
   color: #fff;
@@ -46,6 +50,7 @@ body {
   }
 }
 
+/* ---- Sway animation for mascot ---- */
 @keyframes sway {
   0%, 100% {
     transform: rotate(-3deg) translateY(0px);
@@ -66,7 +71,179 @@ body {
   transform-origin: bottom center;
 }
 
-/* Noise texture overlay for sections */
+/* ---- Scroll-triggered fade in ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+.animate-fade-scale {
+  opacity: 0;
+  animation: fadeInScale 0.6s ease-out forwards;
+}
+
+.animate-slide-left {
+  opacity: 0;
+  animation: slideInLeft 0.7s ease-out forwards;
+}
+
+.animate-slide-right {
+  opacity: 0;
+  animation: slideInRight 0.7s ease-out forwards;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+
+/* ---- Shimmer / shine sweep on text ---- */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #00ff88 0%,
+    #66ffbb 25%,
+    #ffffff 50%,
+    #66ffbb 75%,
+    #00ff88 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ---- Pulsing glow ring ---- */
+@keyframes pulseRing {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
+  }
+}
+
+.pulse-ring {
+  animation: pulseRing 2.5s ease-in-out infinite;
+}
+
+/* ---- Card hover lift ---- */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 136, 0.08);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+/* ---- Floating particles ---- */
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(30px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(0, 255, 136, 0.4);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+}
+
+/* ---- Gradient border animation ---- */
+@keyframes rotateBorder {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+/* ---- Number badge glow pulse ---- */
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2), inset 0 0 10px rgba(0, 255, 136, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.35), inset 0 0 15px rgba(0, 255, 136, 0.1);
+  }
+}
+
+.badge-glow {
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+/* ---- Noise texture overlay ---- */
 .noise-bg {
   position: relative;
 }
@@ -79,10 +256,57 @@ body {
   z-index: 0;
 }
 
-/* Grid pattern for hero */
+/* ---- Grid pattern for hero ---- */
 .grid-bg {
   background-image:
     linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
+}
+
+/* ---- Glowing divider ---- */
+.glow-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.3), transparent);
+}
+
+/* ---- Stat counter glow ---- */
+@keyframes statGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+  }
+}
+
+.stat-value {
+  animation: statGlow 3s ease-in-out infinite;
+}
+
+/* ---- CTA button pulse ---- */
+@keyframes ctaPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+  }
+}
+
+.cta-pulse {
+  animation: ctaPulse 2.5s ease-in-out infinite;
+}
+
+/* ---- Typing cursor blink ---- */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "|";
+  animation: blink 1s step-end infinite;
+  color: #00ff88;
+  margin-left: 2px;
 }
