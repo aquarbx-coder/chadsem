@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import dynamic from "next/dynamic";
+
+const CursorTrail = dynamic(() => import("./components/CursorTrail"), { ssr: false });
+const ScrollProgress = dynamic(() => import("./components/ScrollProgress"), { ssr: false });
+const ClickerGame = dynamic(() => import("./components/ClickerGame"), { ssr: false });
+const SpinWheel = dynamic(() => import("./components/SpinWheel"), { ssr: false });
 
 const CA = "HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
 const PUMP_URL =
@@ -86,10 +92,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
+  const [activeGame, setActiveGame] = useState<"clicker" | "wheel">("clicker");
+
   const statsSection = useInView();
   const aboutSection = useInView();
   const legendSection = useInView();
   const whySection = useInView();
+  const gamesSection = useInView();
   const howSection = useInView();
   const linksSection = useInView();
 
@@ -148,6 +157,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-chad-dark">
+      <CursorTrail />
+      <ScrollProgress />
+
       {/* ==================== NAV ==================== */}
       <nav className="fixed top-0 w-full z-50 bg-chad-dark/90 backdrop-blur-md border-b border-chad-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -156,6 +168,7 @@ export default function Home() {
             <div className="hidden sm:flex gap-6 text-sm text-gray-400">
               <a href="#about" className="hover:text-chad-green transition-colors">About</a>
               <a href="#stats" className="hover:text-chad-green transition-colors">Stats</a>
+              <a href="#games" className="hover:text-chad-green transition-colors">Games</a>
               <a href="#how" className="hover:text-chad-green transition-colors">How to Buy</a>
               <a href="#links" className="hover:text-chad-green transition-colors">Links</a>
             </div>
@@ -538,6 +551,55 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== GAMES ==================== */}
+      <section
+        id="games"
+        ref={gamesSection.ref}
+        className="py-24 px-6 relative noise-bg"
+        style={{ background: "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)" }}
+      >
+        <div className="glow-divider absolute top-0 left-0 right-0" />
+        <div className="glow-divider absolute bottom-0 left-0 right-0" />
+        <Particles count={10} />
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 text-center ${gamesSection.visible ? "animate-fade-up" : "opacity-0"}`}>
+            The <span className="text-shimmer">Trenches</span>
+          </h2>
+          <p className={`text-gray-500 text-center mb-4 text-lg ${gamesSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            Earn points, collect badges, flex on everyone
+          </p>
+          <div className={`mx-auto mb-10 ${gamesSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
+            <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
+          </div>
+
+          {/* Game tabs */}
+          <div className={`flex justify-center gap-2 mb-10 ${gamesSection.visible ? "animate-fade-up delay-300" : "opacity-0"}`}>
+            <button
+              onClick={() => setActiveGame("clicker")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                activeGame === "clicker" ? "tab-active" : "tab-inactive border-chad-border"
+              }`}
+            >
+              $CHADSEM Clicker
+            </button>
+            <button
+              onClick={() => setActiveGame("wheel")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                activeGame === "wheel" ? "tab-active" : "tab-inactive border-chad-border"
+              }`}
+            >
+              Spin the Wheel
+            </button>
+          </div>
+
+          {/* Game content */}
+          <div className={`${gamesSection.visible ? "animate-fade-scale delay-400" : "opacity-0"}`}>
+            {activeGame === "clicker" ? <ClickerGame /> : <SpinWheel />}
           </div>
         </div>
       </section>
