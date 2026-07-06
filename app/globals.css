@@ -71,49 +71,25 @@ body {
   transform-origin: bottom center;
 }
 
-/* ---- Scroll-triggered fade in ---- */
+/* ---- Scroll-triggered animations ---- */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .animate-fade-up {
@@ -143,26 +119,17 @@ body {
 .delay-500 { animation-delay: 0.5s; }
 .delay-600 { animation-delay: 0.6s; }
 .delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-900 { animation-delay: 0.9s; }
 
-/* ---- Shimmer / shine sweep on text ---- */
+/* ---- Shimmer sweep on text ---- */
 @keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
 .text-shimmer {
-  background: linear-gradient(
-    90deg,
-    #00ff88 0%,
-    #66ffbb 25%,
-    #ffffff 50%,
-    #66ffbb 75%,
-    #00ff88 100%
-  );
+  background: linear-gradient(90deg, #00ff88 0%, #66ffbb 25%, #ffffff 50%, #66ffbb 75%, #00ff88 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -172,12 +139,8 @@ body {
 
 /* ---- Pulsing glow ring ---- */
 @keyframes pulseRing {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 255, 136, 0); }
 }
 
 .pulse-ring {
@@ -197,20 +160,10 @@ body {
 
 /* ---- Floating particles ---- */
 @keyframes floatUp {
-  0% {
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) translateX(30px) scale(0.5);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) translateX(30px) scale(0.5); opacity: 0; }
 }
 
 .particle {
@@ -223,20 +176,10 @@ body {
   pointer-events: none;
 }
 
-/* ---- Gradient border animation ---- */
-@keyframes rotateBorder {
-  0% { --angle: 0deg; }
-  100% { --angle: 360deg; }
-}
-
 /* ---- Number badge glow pulse ---- */
 @keyframes badgePulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2), inset 0 0 10px rgba(0, 255, 136, 0.05);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.35), inset 0 0 15px rgba(0, 255, 136, 0.1);
-  }
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.2), inset 0 0 10px rgba(0, 255, 136, 0.05); }
+  50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.35), inset 0 0 15px rgba(0, 255, 136, 0.1); }
 }
 
 .badge-glow {
@@ -272,12 +215,8 @@ body {
 
 /* ---- Stat counter glow ---- */
 @keyframes statGlow {
-  0%, 100% {
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-  }
+  0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 136, 0); }
+  50% { text-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
 }
 
 .stat-value {
@@ -286,19 +225,62 @@ body {
 
 /* ---- CTA button pulse ---- */
 @keyframes ctaPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
 }
 
 .cta-pulse {
   animation: ctaPulse 2.5s ease-in-out infinite;
 }
 
-/* ---- Typing cursor blink ---- */
+/* ---- Marquee / ticker ---- */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+/* ---- Gradient border card ---- */
+.gradient-border {
+  position: relative;
+  background: #12121a;
+  border-radius: 1rem;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), transparent 50%, rgba(0, 255, 136, 0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ---- Timeline connector ---- */
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+  flex-shrink: 0;
+}
+
+.timeline-line {
+  width: 2px;
+  background: linear-gradient(180deg, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.05));
+  flex-shrink: 0;
+}
+
+/* ---- Typewriter cursor ---- */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -309,4 +291,14 @@ body {
   animation: blink 1s step-end infinite;
   color: #00ff88;
   margin-left: 2px;
+}
+
+/* ---- Rotating glow orb ---- */
+@keyframes orbRotate {
+  0% { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+}
+
+.orb-rotate {
+  animation: orbRotate 20s linear infinite;
 }

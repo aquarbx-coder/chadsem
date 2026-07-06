@@ -17,25 +17,23 @@ interface TokenStats {
 }
 
 function formatNumber(n: number | null): string {
-  if (n === null) return "—";
+  if (n === null) return "\u2014";
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(2)}K`;
   return `$${n.toFixed(2)}`;
 }
 
 function formatPrice(p: string | null): string {
-  if (!p) return "—";
+  if (!p) return "\u2014";
   const num = parseFloat(p);
   if (num < 0.0001) return `$${num.toExponential(2)}`;
   if (num < 1) return `$${num.toFixed(6)}`;
   return `$${num.toFixed(4)}`;
 }
 
-/* Hook: animate elements when they scroll into view */
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -51,11 +49,9 @@ function useInView(threshold = 0.15) {
     obs.observe(el);
     return () => obs.disconnect();
   }, [threshold]);
-
   return { ref, visible };
 }
 
-/* Floating particles background */
 function Particles({ count = 12 }: { count?: number }) {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -92,7 +88,9 @@ export default function Home() {
 
   const statsSection = useInView();
   const aboutSection = useInView();
-  const purposeSection = useInView();
+  const legendSection = useInView();
+  const whySection = useInView();
+  const howSection = useInView();
   const linksSection = useInView();
 
   useEffect(() => {
@@ -106,26 +104,12 @@ export default function Home() {
           const virtualSolReserves = data.virtual_sol_reserves
             ? Number(data.virtual_sol_reserves) / 1e9
             : null;
-          const virtualTokenReserves = data.virtual_token_reserves
-            ? Number(data.virtual_token_reserves) / 1e6
-            : null;
 
           let price: string | null = null;
           let mcap: number | null = null;
 
           if (data.usd_market_cap) {
             mcap = Number(data.usd_market_cap);
-          }
-
-          if (
-            virtualSolReserves &&
-            virtualTokenReserves &&
-            virtualTokenReserves > 0
-          ) {
-            if (mcap && data.total_supply) {
-              const totalSupply = Number(data.total_supply) / 1e6;
-              price = (mcap / totalSupply).toString();
-            }
           }
 
           if (!price && mcap && data.total_supply) {
@@ -170,30 +154,10 @@ export default function Home() {
           <span className="text-xl font-bold text-shimmer">$CHADSEM</span>
           <div className="flex items-center gap-6">
             <div className="hidden sm:flex gap-6 text-sm text-gray-400">
-              <a
-                href="#about"
-                className="hover:text-chad-green transition-colors"
-              >
-                About
-              </a>
-              <a
-                href="#stats"
-                className="hover:text-chad-green transition-colors"
-              >
-                Stats
-              </a>
-              <a
-                href="#tokenomics"
-                className="hover:text-chad-green transition-colors"
-              >
-                Purpose
-              </a>
-              <a
-                href="#links"
-                className="hover:text-chad-green transition-colors"
-              >
-                Links
-              </a>
+              <a href="#about" className="hover:text-chad-green transition-colors">About</a>
+              <a href="#stats" className="hover:text-chad-green transition-colors">Stats</a>
+              <a href="#how" className="hover:text-chad-green transition-colors">How to Buy</a>
+              <a href="#links" className="hover:text-chad-green transition-colors">Links</a>
             </div>
             <a
               href={TWITTER_URL}
@@ -211,14 +175,12 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden grid-bg">
         <Particles count={15} />
 
-        {/* Gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-chad-green/5 rounded-full blur-[120px]" />
           <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] bg-chad-green/3 rounded-full blur-[100px]" />
           <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[80px]" />
         </div>
 
-        {/* Mascot - right side on desktop */}
         <div className="hidden lg:block absolute right-[5%] xl:right-[10%] bottom-0 z-10 pointer-events-none">
           <img
             src="/mascot.png"
@@ -228,7 +190,6 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 text-center max-w-4xl mx-auto lg:text-left lg:mr-auto lg:ml-[8%] xl:ml-[12%]">
-          {/* Mobile mascot */}
           <div className="lg:hidden mx-auto mb-8 w-64 h-64 animate-fade-scale">
             <img
               src="/mascot.png"
@@ -247,33 +208,32 @@ export default function Home() {
           </h1>
 
           <p className="animate-fade-up delay-200 text-xl sm:text-2xl text-gray-400 mb-2 font-medium">
-            From the trenches to the top.
+            The community memecoin honoring the king of Solana calls.
           </p>
           <p className="animate-fade-up delay-300 text-sm text-gray-500 mb-10 max-w-lg lg:mx-0 mx-auto">
-            The community memecoin honoring the king of Solana calls. Built by
-            degens, for degens.
+            Built by degens, for degens. No insiders, no presale, no BS.
+            Just a community that knows who put them on.
           </p>
 
           <div className="animate-fade-up delay-400 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
             <a
-              href={TWITTER_URL}
+              href={PUMP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="cta-pulse px-8 py-4 bg-chad-green text-black font-bold rounded-xl hover:bg-chad-green/90 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)] transition-all text-lg"
             >
-              Follow on X
+              Buy $CHADSEM
             </a>
             <a
-              href={PUMP_URL}
+              href={TWITTER_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-chad-card border border-chad-border text-white font-bold rounded-xl hover:border-chad-green/40 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)] transition-all text-lg"
             >
-              Buy on Pump.fun
+              Follow on X
             </a>
           </div>
 
-          {/* CA in hero */}
           <button
             onClick={copyCA}
             className="animate-fade-up delay-500 inline-flex items-center gap-2 bg-chad-card rounded-xl px-6 py-3 border-glow hover:border-chad-green/40 transition-all cursor-pointer group"
@@ -289,56 +249,56 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ==================== TICKER BAR ==================== */}
+      <div className="bg-chad-green/5 border-y border-chad-green/10 py-3 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap flex gap-12 text-sm text-gray-400">
+          {[...Array(2)].map((_, j) => (
+            <div key={j} className="flex gap-12 shrink-0">
+              <span>$CHADSEM on Solana</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>Community Owned</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>No Presale</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>No Team Tokens</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>Honoring @blknoiz06</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>From the Trenches</span>
+              <span className="text-chad-green">&#9679;</span>
+              <span>Built Different</span>
+              <span className="text-chad-green">&#9679;</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ==================== LIVE STATS ==================== */}
       <section
         id="stats"
         ref={statsSection.ref}
         className="py-24 px-6 relative noise-bg"
-        style={{
-          background:
-            "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)" }}
       >
         <div className="glow-divider absolute top-0 left-0 right-0" />
         <div className="glow-divider absolute bottom-0 left-0 right-0" />
         <Particles count={8} />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2
-            className={`text-4xl sm:text-5xl font-black mb-4 transition-all duration-700 ${
-              statsSection.visible
-                ? "animate-fade-up"
-                : "opacity-0"
-            }`}
-          >
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 ${statsSection.visible ? "animate-fade-up" : "opacity-0"}`}>
             Live <span className="text-shimmer">Stats</span>
           </h2>
-          <p
-            className={`text-gray-500 mb-2 text-lg transition-all duration-700 ${
-              statsSection.visible
-                ? "animate-fade-up delay-100"
-                : "opacity-0"
-            }`}
-          >
-            Real-time data from Pump.fun
+          <p className={`text-gray-500 mb-2 text-lg ${statsSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            Pulled straight from Pump.fun
           </p>
-          <p
-            className={`text-gray-600 text-xs mb-12 transition-all duration-700 ${
-              statsSection.visible
-                ? "animate-fade-up delay-200"
-                : "opacity-0"
-            }`}
-          >
-            Auto-refreshes every 30 seconds
+          <p className={`text-gray-600 text-xs mb-12 ${statsSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
+            Updates every 30 seconds
           </p>
 
           {loading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-chad-card rounded-2xl p-6 border-glow animate-pulse"
-                >
+                <div key={i} className="bg-chad-card rounded-2xl p-6 border-glow animate-pulse">
                   <div className="h-4 bg-gray-800 rounded w-20 mx-auto mb-3" />
                   <div className="h-8 bg-gray-800 rounded w-28 mx-auto" />
                 </div>
@@ -355,19 +315,13 @@ export default function Home() {
                   key={stat.label}
                   className={`bg-chad-card rounded-2xl p-6 border-glow card-glow card-hover ${
                     i === 2 ? "sm:col-span-2 lg:col-span-1" : ""
-                  } ${
-                    statsSection.visible
-                      ? `animate-fade-scale delay-${(i + 3) * 100}`
-                      : "opacity-0"
-                  }`}
+                  } ${statsSection.visible ? `animate-fade-scale delay-${(i + 3) * 100}` : "opacity-0"}`}
                 >
                   <div className="w-10 h-10 mx-auto rounded-full bg-chad-green/10 flex items-center justify-center mb-3">
                     <div className="w-2 h-2 rounded-full bg-chad-green animate-pulse" />
                   </div>
                   <p className="text-gray-500 text-sm mb-2">{stat.label}</p>
-                  <p className="text-white text-2xl font-bold stat-value">
-                    {stat.value}
-                  </p>
+                  <p className="text-white text-2xl font-bold stat-value">{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -377,26 +331,19 @@ export default function Home() {
             href={PUMP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-block mt-8 text-sm text-chad-green/70 hover:text-chad-green transition-colors ${
-              statsSection.visible
-                ? "animate-fade-up delay-700"
-                : "opacity-0"
-            }`}
+            className={`inline-block mt-8 text-sm text-chad-green/70 hover:text-chad-green transition-colors ${statsSection.visible ? "animate-fade-up delay-700" : "opacity-0"}`}
           >
             View on Pump.fun &rarr;
           </a>
         </div>
       </section>
 
-      {/* ==================== ABOUT ==================== */}
+      {/* ==================== WHO IS ANSEM ==================== */}
       <section
         id="about"
         ref={aboutSection.ref}
         className="py-24 px-6 relative"
-        style={{
-          background:
-            "linear-gradient(180deg, #0a0a0f 0%, #0e0e18 50%, #0a0a0f 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #0a0a0f 0%, #0e0e18 50%, #0a0a0f 100%)" }}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-chad-green/3 rounded-full blur-[150px] -translate-y-1/2" />
@@ -405,94 +352,48 @@ export default function Home() {
         <Particles count={10} />
 
         <div className="max-w-4xl mx-auto relative z-10">
-          <h2
-            className={`text-4xl sm:text-5xl font-black mb-4 text-center ${
-              aboutSection.visible ? "animate-fade-up" : "opacity-0"
-            }`}
-          >
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 text-center ${aboutSection.visible ? "animate-fade-up" : "opacity-0"}`}>
             Who is <span className="text-shimmer">Ansem</span>?
           </h2>
-          <p
-            className={`text-gray-500 text-center mb-4 text-lg ${
-              aboutSection.visible
-                ? "animate-fade-up delay-100"
-                : "opacity-0"
-            }`}
-          >
-            @blknoiz06 — The legend behind the calls
+          <p className={`text-gray-500 text-center mb-4 text-lg ${aboutSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            @blknoiz06 &mdash; if you know, you know
           </p>
-
-          {/* Decorative line */}
-          <div
-            className={`mx-auto mb-12 ${
-              aboutSection.visible
-                ? "animate-fade-up delay-200"
-                : "opacity-0"
-            }`}
-          >
+          <div className={`mx-auto mb-12 ${aboutSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
             <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Card 01 */}
-            <div
-              className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${
-                aboutSection.visible
-                  ? "animate-slide-left delay-300"
-                  : "opacity-0"
-              }`}
-            >
-              {/* Hover gradient overlay */}
+            <div className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-slide-left delay-300" : "opacity-0"}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
                   <span className="text-chad-green text-lg font-black">01</span>
                 </div>
-                <h3 className="text-chad-green font-bold text-xl mb-3">
-                  The Trench King
-                </h3>
+                <h3 className="text-chad-green font-bold text-xl mb-3">The guy who called SOL before everyone</h3>
                 <p className="text-gray-400 leading-relaxed">
-                  Ansem (@blknoiz06) became one of the most influential voices in
-                  crypto Twitter. Known for his early Solana calls and fearless
-                  market takes, he built a massive following of degens who trusted
-                  his vision when no one else was paying attention.
+                  While CT was sleeping on Solana, Ansem was already deep in it. He called the SOL run before most
+                  people even had a Phantom wallet. His timeline became required reading for anyone trying to catch
+                  the next move. Not a guesser &mdash; the man had conviction and the receipts to prove it.
                 </p>
               </div>
             </div>
 
-            {/* Card 02 */}
-            <div
-              className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${
-                aboutSection.visible
-                  ? "animate-slide-right delay-400"
-                  : "opacity-0"
-              }`}
-            >
+            <div className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-slide-right delay-400" : "opacity-0"}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10">
                 <div className="w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
                   <span className="text-chad-green text-lg font-black">02</span>
                 </div>
-                <h3 className="text-chad-green font-bold text-xl mb-3">
-                  Community Builder
-                </h3>
+                <h3 className="text-chad-green font-bold text-xl mb-3">Put thousands of people on</h3>
                 <p className="text-gray-400 leading-relaxed">
-                  While others chased hype, Ansem stayed in the trenches. He
-                  shared alpha, called bottoms, and helped countless community
-                  members navigate the chaos of crypto. His dedication to the
-                  culture made him a legend.
+                  Ansem didn&apos;t gatekeep. He shared his plays, broke down his thinking, and brought
+                  an entire generation of traders into Solana. People made life-changing money because
+                  they followed his calls. That&apos;s not influence &mdash; that&apos;s impact.
                 </p>
               </div>
             </div>
 
-            {/* Card 03 - full width */}
-            <div
-              className={`md:col-span-2 bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${
-                aboutSection.visible
-                  ? "animate-fade-up delay-500"
-                  : "opacity-0"
-              }`}
-            >
+            <div className={`md:col-span-2 bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${aboutSection.visible ? "animate-fade-up delay-500" : "opacity-0"}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10 md:flex md:gap-8 md:items-start">
                 <div className="flex-shrink-0 mb-5 md:mb-0">
@@ -501,16 +402,12 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-chad-green font-bold text-xl mb-3">
-                    Why $CHADSEM?
-                  </h3>
+                  <h3 className="text-chad-green font-bold text-xl mb-3">More than a trader &mdash; a culture</h3>
                   <p className="text-gray-400 leading-relaxed">
-                    $CHADSEM is a tribute to everything Ansem represents — the
-                    grit, the calls, the community. This isn&apos;t just another
-                    memecoin. It&apos;s a movement built by the people who were
-                    in the trenches, for the people who understand what it means
-                    to hold through the noise. No VC backing, no insider deals —
-                    just pure, unfiltered community energy.
+                    Ansem became the face of a whole era of Solana trading. The &quot;trench&quot;
+                    mentality &mdash; grinding through the noise, holding when it&apos;s ugly, buying when
+                    everyone else is scared &mdash; that came from him. He didn&apos;t just make calls,
+                    he built a culture around showing up every single day. That&apos;s what $CHADSEM is about.
                   </p>
                 </div>
               </div>
@@ -519,127 +416,203 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ==================== PURPOSE ==================== */}
+      {/* ==================== THE LEGEND (timeline) ==================== */}
       <section
-        id="tokenomics"
-        ref={purposeSection.ref}
+        ref={legendSection.ref}
         className="py-24 px-6 relative noise-bg"
-        style={{
-          background:
-            "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)" }}
       >
         <div className="glow-divider absolute top-0 left-0 right-0" />
         <div className="glow-divider absolute bottom-0 left-0 right-0" />
         <Particles count={8} />
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2
-            className={`text-4xl sm:text-5xl font-black mb-4 ${
-              purposeSection.visible ? "animate-fade-up" : "opacity-0"
-            }`}
-          >
-            Pure <span className="text-shimmer">Market Presence</span>
+        <div className="max-w-3xl mx-auto relative z-10">
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 text-center ${legendSection.visible ? "animate-fade-up" : "opacity-0"}`}>
+            The <span className="text-shimmer">Legend</span>
           </h2>
-          <p
-            className={`text-gray-500 mb-4 text-lg max-w-2xl mx-auto ${
-              purposeSection.visible
-                ? "animate-fade-up delay-100"
-                : "opacity-0"
-            }`}
-          >
-            No roadmap fluff. No empty promises. Just community and culture.
+          <p className={`text-gray-500 text-center mb-4 text-lg ${legendSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            How Ansem became the most trusted voice in Solana
           </p>
-          <div
-            className={`mx-auto mb-16 ${
-              purposeSection.visible
-                ? "animate-fade-up delay-200"
-                : "opacity-0"
-            }`}
-          >
+          <div className={`mx-auto mb-16 ${legendSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
             <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="space-y-0">
             {[
               {
-                icon: (
-                  <svg
-                    className="w-7 h-7 text-chad-green"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                ),
-                title: "Community Driven",
-                desc: "No team tokens. No dev allocation. 100% for the people in the trenches.",
+                period: "Early 2023",
+                title: "Called Solana when nobody cared",
+                text: "SOL was under $20 and CT had written it off. Ansem was loading bags and telling anyone who\u2019d listen that Solana wasn\u2019t dead. Most people laughed. They\u2019re not laughing anymore.",
               },
               {
-                icon: (
-                  <svg
-                    className="w-7 h-7 text-chad-green"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                ),
-                title: "No Fluff",
-                desc: "We don\u2019t need a 50-page whitepaper. The culture speaks for itself.",
+                period: "Mid 2023",
+                title: "Built the trench army",
+                text: "His timeline became a hub for Solana degens. Daily threads, real-time analysis, no paywalls. He wasn\u2019t selling courses or running a paid group \u2014 just sharing plays and building a community that moved together.",
               },
               {
-                icon: (
-                  <svg
-                    className="w-7 h-7 text-chad-green"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                ),
-                title: "Market Energy",
-                desc: "Built on Solana. Fast, cheap, and ready for the next wave.",
+                period: "Late 2023",
+                title: "SOL rips past $100",
+                text: "Everything Ansem said played out. The people who listened went from underwater to life-changing gains. Solana went from a ghost chain to the most active L1 in crypto. His followers didn\u2019t just make money \u2014 they caught an entire narrative shift.",
+              },
+              {
+                period: "2024",
+                title: "Became the face of Solana culture",
+                text: "Ansem wasn\u2019t just calling trades anymore. He was on panels, podcasts, and at every major crypto event. He went from anon trench trader to one of the most recognized figures in the space. Still posting, still grinding, still in the trenches.",
+              },
+            ].map((item, i) => (
+              <div
+                key={item.period}
+                className={`flex gap-6 ${legendSection.visible ? `animate-fade-up delay-${(i + 3) * 100}` : "opacity-0"}`}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="timeline-dot" />
+                  {i < 3 && <div className="timeline-line flex-1 min-h-[40px]" />}
+                </div>
+                <div className="pb-10">
+                  <span className="text-chad-green text-xs font-bold uppercase tracking-widest">{item.period}</span>
+                  <h3 className="text-white font-bold text-lg mt-1 mb-2">{item.title}</h3>
+                  <p className="text-gray-400 leading-relaxed text-sm">{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== WHY $CHADSEM ==================== */}
+      <section
+        ref={whySection.ref}
+        className="py-24 px-6 relative"
+        style={{ background: "linear-gradient(180deg, #0a0a0f 0%, #0e0e18 50%, #0a0a0f 100%)" }}
+      >
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-chad-green/3 rounded-full blur-[130px]" />
+        </div>
+        <Particles count={8} />
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 ${whySection.visible ? "animate-fade-up" : "opacity-0"}`}>
+            Why <span className="text-shimmer">$CHADSEM</span>?
+          </h2>
+          <p className={`text-gray-500 mb-4 text-lg max-w-2xl mx-auto ${whySection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            Not another fork. Not another cash grab. Here&apos;s what this actually is.
+          </p>
+          <div className={`mx-auto mb-16 ${whySection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
+            <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: <svg className="w-7 h-7 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+                title: "100% Community",
+                desc: "No team allocation. No dev wallets. No insider deals. Every single token is for the community.",
+              },
+              {
+                icon: <svg className="w-7 h-7 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
+                title: "No Presale",
+                desc: "Nobody got in early behind closed doors. Fair launch on Pump.fun. Same entry for everyone.",
+              },
+              {
+                icon: <svg className="w-7 h-7 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                title: "Solana Native",
+                desc: "Built on the fastest chain. Sub-second transactions, near-zero fees. No bridging headaches.",
+              },
+              {
+                icon: <svg className="w-7 h-7 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
+                title: "A Tribute",
+                desc: "This coin exists because Ansem put people on. It\u2019s how the community says thanks.",
               },
             ].map((item, i) => (
               <div
                 key={item.title}
-                className={`bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover relative overflow-hidden group ${
-                  purposeSection.visible
-                    ? `animate-fade-scale delay-${(i + 3) * 100}`
-                    : "opacity-0"
-                }`}
+                className={`bg-chad-card rounded-2xl p-6 border-glow card-glow card-hover relative overflow-hidden group ${whySection.visible ? `animate-fade-scale delay-${(i + 3) * 100}` : "opacity-0"}`}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative z-10">
                   <div className="w-14 h-14 mx-auto rounded-2xl bg-chad-green/10 flex items-center justify-center mb-5 badge-glow">
                     {item.icon}
                   </div>
-                  <h3 className="text-white font-bold text-lg mb-2">
-                    {item.title}
-                  </h3>
+                  <h3 className="text-white font-bold text-lg mb-2">{item.title}</h3>
                   <p className="text-gray-500 text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== HOW TO BUY ==================== */}
+      <section
+        id="how"
+        ref={howSection.ref}
+        className="py-24 px-6 relative noise-bg"
+        style={{ background: "linear-gradient(180deg, #0d0d15 0%, #0a0a0f 50%, #0d0d15 100%)" }}
+      >
+        <div className="glow-divider absolute top-0 left-0 right-0" />
+        <div className="glow-divider absolute bottom-0 left-0 right-0" />
+        <Particles count={6} />
+
+        <div className="max-w-3xl mx-auto relative z-10">
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 text-center ${howSection.visible ? "animate-fade-up" : "opacity-0"}`}>
+            How to <span className="text-shimmer">Buy</span>
+          </h2>
+          <p className={`text-gray-500 text-center mb-4 text-lg ${howSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            Three steps. That&apos;s it.
+          </p>
+          <div className={`mx-auto mb-16 ${howSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
+            <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
+          </div>
+
+          <div className="space-y-6">
+            {[
+              {
+                step: "1",
+                title: "Get a Solana wallet",
+                text: "Download Phantom or Solflare. If you\u2019re on mobile, both have solid apps. Set it up, save your seed phrase somewhere safe (not in your notes app).",
+              },
+              {
+                step: "2",
+                title: "Load up SOL",
+                text: "Buy SOL on any exchange \u2014 Coinbase, Binance, whatever you use. Send it to your Phantom wallet address. Make sure you keep a little SOL for gas (like 0.05 SOL is plenty).",
+              },
+              {
+                step: "3",
+                title: "Swap for $CHADSEM",
+                text: "Head to Pump.fun or Jupiter. Paste the contract address, set your slippage, and swap your SOL for $CHADSEM. Welcome to the trenches.",
+              },
+            ].map((item, i) => (
+              <div
+                key={item.step}
+                className={`gradient-border card-hover ${howSection.visible ? `animate-fade-up delay-${(i + 3) * 100}` : "opacity-0"}`}
+              >
+                <div className="p-6 sm:p-8 flex gap-5 items-start relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10 w-12 h-12 rounded-xl bg-chad-green/10 flex items-center justify-center flex-shrink-0 badge-glow">
+                    <span className="text-chad-green text-xl font-black">{item.step}</span>
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-white font-bold text-lg mb-2">{item.title}</h3>
+                    <p className="text-gray-400 leading-relaxed text-sm">{item.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={`text-center mt-10 ${howSection.visible ? "animate-fade-up delay-700" : "opacity-0"}`}>
+            <button
+              onClick={copyCA}
+              className="inline-flex items-center gap-3 bg-chad-card rounded-xl px-6 py-4 border-glow hover:border-chad-green/40 transition-all cursor-pointer group"
+            >
+              <span className="text-sm text-gray-500">CA:</span>
+              <span className="text-chad-green font-mono text-xs sm:text-sm truncate max-w-[240px] sm:max-w-none">
+                {CA}
+              </span>
+              <span className="text-xs px-2 py-1 rounded bg-chad-green/10 text-chad-green group-hover:bg-chad-green/20 transition-colors">
+                {copied ? "Copied!" : "Copy"}
+              </span>
+            </button>
           </div>
         </div>
       </section>
@@ -649,10 +622,7 @@ export default function Home() {
         id="links"
         ref={linksSection.ref}
         className="py-24 px-6 relative"
-        style={{
-          background:
-            "linear-gradient(180deg, #0a0a0f 0%, #0e0e18 50%, #0a0a0f 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #0a0a0f 0%, #0e0e18 50%, #0a0a0f 100%)" }}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-chad-green/3 rounded-full blur-[150px]" />
@@ -660,29 +630,13 @@ export default function Home() {
         <Particles count={8} />
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2
-            className={`text-4xl sm:text-5xl font-black mb-4 ${
-              linksSection.visible ? "animate-fade-up" : "opacity-0"
-            }`}
-          >
-            Join the <span className="text-shimmer">Movement</span>
+          <h2 className={`text-4xl sm:text-5xl font-black mb-4 ${linksSection.visible ? "animate-fade-up" : "opacity-0"}`}>
+            Join the <span className="text-shimmer">Community</span>
           </h2>
-          <p
-            className={`text-gray-500 mb-4 text-lg ${
-              linksSection.visible
-                ? "animate-fade-up delay-100"
-                : "opacity-0"
-            }`}
-          >
-            Get in before the rest figure it out.
+          <p className={`text-gray-500 mb-4 text-lg ${linksSection.visible ? "animate-fade-up delay-100" : "opacity-0"}`}>
+            The trenches are better when you&apos;re not alone.
           </p>
-          <div
-            className={`mx-auto mb-12 ${
-              linksSection.visible
-                ? "animate-fade-up delay-200"
-                : "opacity-0"
-            }`}
-          >
+          <div className={`mx-auto mb-12 ${linksSection.visible ? "animate-fade-up delay-200" : "opacity-0"}`}>
             <div className="w-20 h-0.5 mx-auto bg-gradient-to-r from-transparent via-chad-green to-transparent" />
           </div>
 
@@ -691,61 +645,28 @@ export default function Home() {
               {
                 href: TWITTER_URL,
                 isButton: false,
-                iconContent: (
-                  <span className="text-chad-green text-xl font-bold">X</span>
-                ),
-                title: "X",
+                iconContent: <span className="text-chad-green text-xl font-bold">X</span>,
+                title: "X / Twitter",
                 sub: "@ChadsemCoin",
               },
               {
                 href: PUMP_URL,
                 isButton: false,
-                iconContent: (
-                  <svg
-                    className="w-6 h-6 text-chad-green"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                ),
+                iconContent: <svg className="w-6 h-6 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>,
                 title: "Pump.fun",
-                sub: "Buy Now",
+                sub: "Buy $CHADSEM",
               },
               {
                 href: undefined,
                 isButton: true,
-                iconContent: (
-                  <svg
-                    className="w-6 h-6 text-chad-green"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                    />
-                  </svg>
-                ),
-                title: "Contract Address",
-                sub: copied ? "Copied!" : CA,
+                iconContent: <svg className="w-6 h-6 text-chad-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>,
+                title: "Contract",
+                sub: copied ? "Copied!" : `${CA.slice(0, 6)}...${CA.slice(-4)}`,
               },
             ].map((item, i) => {
               const classes = `bg-chad-card rounded-2xl p-8 border-glow card-glow card-hover hover:border-chad-green/40 transition-all group relative overflow-hidden ${
-                linksSection.visible
-                  ? `animate-fade-scale delay-${(i + 3) * 100}`
-                  : "opacity-0"
+                linksSection.visible ? `animate-fade-scale delay-${(i + 3) * 100}` : "opacity-0"
               }`;
-
               const inner = (
                 <>
                   <div className="absolute inset-0 bg-gradient-to-b from-chad-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -753,75 +674,52 @@ export default function Home() {
                     <div className="w-12 h-12 mx-auto rounded-xl bg-chad-green/10 flex items-center justify-center mb-4 badge-glow">
                       {item.iconContent}
                     </div>
-                    <h3 className="text-white font-bold mb-1 group-hover:text-chad-green transition-colors">
-                      {item.title}
-                    </h3>
-                    <p
-                      className={`text-gray-500 font-mono truncate ${
-                        item.isButton ? "text-xs" : "text-sm"
-                      }`}
-                    >
-                      {item.sub}
-                    </p>
+                    <h3 className="text-white font-bold mb-1 group-hover:text-chad-green transition-colors">{item.title}</h3>
+                    <p className="text-gray-500 text-sm font-mono">{item.sub}</p>
                   </div>
                 </>
               );
 
               if (item.isButton) {
-                return (
-                  <button
-                    key={item.title}
-                    onClick={copyCA}
-                    className={`${classes} text-left`}
-                  >
-                    {inner}
-                  </button>
-                );
+                return <button key={item.title} onClick={copyCA} className={`${classes} text-left`}>{inner}</button>;
               }
-
-              return (
-                <a
-                  key={item.title}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={classes}
-                >
-                  {inner}
-                </a>
-              );
+              return <a key={item.title} href={item.href} target="_blank" rel="noopener noreferrer" className={classes}>{inner}</a>;
             })}
           </div>
 
-          {/* CA display box */}
-          <button
-            onClick={copyCA}
-            className={`inline-block bg-chad-card rounded-xl px-8 py-4 border-glow hover:border-chad-green/40 transition-all cursor-pointer card-hover ${
-              linksSection.visible
-                ? "animate-fade-up delay-700"
-                : "opacity-0"
-            }`}
-          >
-            <p className="text-sm text-gray-500 mb-1">CA (click to copy)</p>
-            <p className="text-chad-green font-mono font-bold tracking-wide text-xs sm:text-sm break-all">
-              {copied ? "Copied to clipboard!" : CA}
-            </p>
-          </button>
+          {/* Big CTA */}
+          <div className={`${linksSection.visible ? "animate-fade-up delay-700" : "opacity-0"}`}>
+            <a
+              href={PUMP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-pulse inline-block px-10 py-5 bg-chad-green text-black font-bold rounded-xl hover:bg-chad-green/90 hover:shadow-[0_0_40px_rgba(0,255,136,0.3)] transition-all text-xl"
+            >
+              Buy $CHADSEM Now
+            </a>
+          </div>
         </div>
       </section>
 
       {/* ==================== FOOTER ==================== */}
-      <footer
-        className="py-8 px-6 border-t border-chad-border text-center"
-        style={{ background: "#08080c" }}
-      >
-        <p className="text-gray-600 text-sm">
-          $CHADSEM is a community memecoin with no intrinsic value or
-          expectation of financial return. For entertainment purposes only.
-        </p>
-        <p className="text-gray-700 text-xs mt-2">
-          &copy; 2025 $CHADSEM Community
-        </p>
+      <footer className="py-10 px-6 border-t border-chad-border" style={{ background: "#08080c" }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <span className="text-xl font-bold text-shimmer">$CHADSEM</span>
+            <div className="flex gap-6 text-sm text-gray-500">
+              <a href={TWITTER_URL} target="_blank" rel="noopener noreferrer" className="hover:text-chad-green transition-colors">X</a>
+              <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-chad-green transition-colors">Pump.fun</a>
+            </div>
+          </div>
+          <div className="w-full h-px bg-chad-border mb-6" />
+          <p className="text-gray-600 text-sm text-center">
+            $CHADSEM is a community memecoin with no intrinsic value or expectation of financial return.
+            Not affiliated with Ansem. This is a fan token made by the community. Do your own research. Not financial advice.
+          </p>
+          <p className="text-gray-700 text-xs mt-3 text-center">
+            &copy; 2025 $CHADSEM Community
+          </p>
+        </div>
       </footer>
     </div>
   );
