@@ -332,3 +332,154 @@ body {
   color: #9ca3af;
   background: rgba(255, 255, 255, 0.03);
 }
+
+/* ---- Super Saiyan Aura Effect ---- */
+
+/* Outer aura - large pulsing glow */
+@keyframes auraOuter {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+    filter: blur(40px);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(1.08);
+    filter: blur(50px);
+  }
+}
+
+.aura-outer {
+  background: radial-gradient(ellipse at center bottom, rgba(0, 255, 136, 0.4) 0%, rgba(0, 255, 136, 0.1) 40%, transparent 70%);
+  animation: auraOuter 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Mid aura - brighter, tighter */
+@keyframes auraMid {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1) scaleX(0.95);
+    filter: blur(25px);
+  }
+  33% {
+    opacity: 0.35;
+    transform: scale(1.05) scaleX(1.02);
+    filter: blur(30px);
+  }
+  66% {
+    opacity: 0.25;
+    transform: scale(0.98) scaleX(0.98);
+    filter: blur(22px);
+  }
+}
+
+.aura-mid {
+  background: radial-gradient(ellipse at center bottom, rgba(0, 255, 136, 0.5) 0%, rgba(0, 230, 120, 0.15) 35%, transparent 65%);
+  animation: auraMid 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Inner aura - bright core */
+@keyframes auraInner {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+    filter: blur(15px);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.03);
+    filter: blur(18px);
+  }
+}
+
+.aura-inner {
+  background: radial-gradient(ellipse at center 70%, rgba(0, 255, 136, 0.6) 0%, rgba(200, 255, 220, 0.1) 30%, transparent 60%);
+  animation: auraInner 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Energy streaks - vertical lines shooting up */
+@keyframes auraStreaks {
+  0%, 100% {
+    opacity: 0.1;
+    background-size: 3px 60px, 2px 80px, 4px 50px, 2px 70px, 3px 90px;
+    background-position: 20% 100%, 35% 100%, 50% 100%, 65% 100%, 80% 100%;
+  }
+  25% {
+    opacity: 0.2;
+    background-size: 3px 90px, 2px 60px, 4px 80px, 2px 50px, 3px 70px;
+    background-position: 20% 80%, 35% 90%, 50% 70%, 65% 85%, 80% 75%;
+  }
+  50% {
+    opacity: 0.15;
+    background-size: 3px 70px, 2px 90px, 4px 60px, 2px 80px, 3px 50px;
+    background-position: 20% 90%, 35% 75%, 50% 85%, 65% 70%, 80% 95%;
+  }
+  75% {
+    opacity: 0.2;
+    background-size: 3px 80px, 2px 50px, 4px 90px, 2px 60px, 3px 80px;
+    background-position: 20% 75%, 35% 85%, 50% 90%, 65% 95%, 80% 80%;
+  }
+}
+
+.aura-streaks {
+  background-image:
+    linear-gradient(to top, rgba(0, 255, 136, 0.4), transparent),
+    linear-gradient(to top, rgba(0, 255, 136, 0.3), transparent),
+    linear-gradient(to top, rgba(200, 255, 220, 0.3), transparent),
+    linear-gradient(to top, rgba(0, 255, 136, 0.3), transparent),
+    linear-gradient(to top, rgba(0, 255, 136, 0.4), transparent);
+  background-repeat: no-repeat;
+  animation: auraStreaks 1.8s ease-in-out infinite;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* Floating sparks */
+@keyframes auraSpark {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-50px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.3);
+  }
+}
+
+.aura-spark {
+  animation: auraSpark 1.5s ease-out infinite;
+  pointer-events: none;
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.8);
+}
+
+/* Ground glow under character */
+@keyframes auraGround {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateX(-50%) scaleX(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scaleX(1.15);
+  }
+}
+
+.aura-ground {
+  animation: auraGround 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* delay utilities for sparks */
+.delay-200 { animation-delay: 0.2s; }
+.delay-600 { animation-delay: 0.6s; }

@@ -194,21 +194,49 @@ export default function Home() {
           <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[80px]" />
         </div>
 
+        {/* Desktop mascot with super saiyan aura */}
         <div className="hidden lg:block absolute right-[5%] xl:right-[10%] bottom-0 z-10 pointer-events-none">
-          <img
-            src="/mascot.png"
-            alt="CHADSEM Mascot"
-            className="animate-sway w-[480px] xl:w-[560px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.15)]"
-          />
-        </div>
-
-        <div className="relative z-10 text-center max-w-4xl mx-auto lg:text-left lg:mr-auto lg:ml-[8%] xl:ml-[12%]">
-          <div className="lg:hidden mx-auto mb-8 w-64 h-64 animate-fade-scale">
+          <div className="relative">
+            {/* Aura layers */}
+            <div className="absolute inset-0 -inset-x-16 -top-20 aura-outer rounded-full" />
+            <div className="absolute inset-0 -inset-x-10 -top-14 aura-mid rounded-full" />
+            <div className="absolute inset-0 -inset-x-6 -top-10 aura-inner rounded-full" />
+            {/* Energy streaks */}
+            <div className="absolute inset-0 -inset-x-12 -top-16 aura-streaks" />
+            {/* Sparks */}
+            <div className="absolute top-[10%] left-[15%] aura-spark w-1.5 h-1.5 rounded-full bg-chad-green" />
+            <div className="absolute top-[20%] right-[20%] aura-spark delay-300 w-2 h-2 rounded-full bg-white" />
+            <div className="absolute top-[5%] left-[40%] aura-spark delay-600 w-1 h-1 rounded-full bg-chad-green" />
+            <div className="absolute top-[30%] right-[10%] aura-spark delay-200 w-1.5 h-1.5 rounded-full bg-emerald-300" />
+            <div className="absolute top-[15%] right-[35%] aura-spark delay-500 w-1 h-1 rounded-full bg-white" />
             <img
               src="/mascot.png"
               alt="CHADSEM Mascot"
-              className="animate-sway w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,255,136,0.15)]"
+              className="relative z-10 animate-sway w-[480px] xl:w-[560px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.3)]"
             />
+            {/* Ground glow */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-8 bg-chad-green/20 rounded-full blur-xl aura-ground" />
+          </div>
+        </div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto lg:text-left lg:mr-auto lg:ml-[8%] xl:ml-[12%]">
+          {/* Mobile mascot with super saiyan aura */}
+          <div className="lg:hidden mx-auto mb-8 w-64 h-64 animate-fade-scale">
+            <div className="relative w-full h-full">
+              <div className="absolute inset-0 -inset-x-8 -top-10 aura-outer rounded-full" />
+              <div className="absolute inset-0 -inset-x-5 -top-6 aura-mid rounded-full" />
+              <div className="absolute inset-0 -inset-x-3 -top-4 aura-inner rounded-full" />
+              <div className="absolute inset-0 -inset-x-6 -top-8 aura-streaks" />
+              <div className="absolute top-[10%] left-[10%] aura-spark w-1 h-1 rounded-full bg-chad-green" />
+              <div className="absolute top-[15%] right-[15%] aura-spark delay-300 w-1.5 h-1.5 rounded-full bg-white" />
+              <div className="absolute top-[5%] left-[35%] aura-spark delay-500 w-1 h-1 rounded-full bg-chad-green" />
+              <img
+                src="/mascot.png"
+                alt="CHADSEM Mascot"
+                className="relative z-10 animate-sway w-full h-full object-contain drop-shadow-[0_0_40px_rgba(0,255,136,0.3)]"
+              />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70%] h-4 bg-chad-green/20 rounded-full blur-lg aura-ground" />
+            </div>
           </div>
 
           <div className="animate-fade-up inline-block px-4 py-1.5 bg-chad-green/10 border border-chad-green/20 rounded-full text-chad-green text-xs font-semibold tracking-wider uppercase mb-6 pulse-ring">
