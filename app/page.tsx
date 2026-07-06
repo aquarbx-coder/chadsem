@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 const CursorTrail = dynamic(() => import("./components/CursorTrail"), { ssr: false });
 const ScrollProgress = dynamic(() => import("./components/ScrollProgress"), { ssr: false });
+const ScrollToTop = dynamic(() => import("./components/ScrollToTop"), { ssr: false });
 const ClickerGame = dynamic(() => import("./components/ClickerGame"), { ssr: false });
 const SpinWheel = dynamic(() => import("./components/SpinWheel"), { ssr: false });
 const Typewriter = dynamic(() => import("./components/Typewriter"), { ssr: false });
@@ -165,11 +166,12 @@ export default function Home() {
     <div className="min-h-screen bg-chad-dark">
       <CursorTrail />
       <ScrollProgress />
+      <ScrollToTop />
 
       {/* ==================== NAV ==================== */}
       <nav className="fixed top-0 w-full z-50 bg-chad-dark/90 backdrop-blur-md border-b border-chad-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-xl font-bold text-shimmer">$CHADSEM</span>
+          <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="text-xl font-bold text-shimmer cursor-pointer hover:opacity-80 transition-opacity">$CHADSEM</a>
           <div className="flex items-center gap-6">
             <div className="hidden sm:flex gap-6 text-sm text-gray-400">
               <a href="#about" className="hover:text-chad-green transition-colors">About</a>
