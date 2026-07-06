@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 const SEGMENTS = [
-  { label: "Diamond Hands", color: "#00ff88", rarity: "common" },
-  { label: "1000x Incoming", color: "#00cc6a", rarity: "common" },
-  { label: "WAGMI", color: "#00ff88", rarity: "common" },
-  { label: "Trench Veteran", color: "#00cc6a", rarity: "uncommon" },
-  { label: "Ansem Approved", color: "#00ff88", rarity: "rare" },
-  { label: "Paper Hands", color: "#ff4444", rarity: "common" },
-  { label: "To The Moon", color: "#00cc6a", rarity: "common" },
-  { label: "Chad Status", color: "#00ff88", rarity: "rare" },
-  { label: "NGMI", color: "#ff4444", rarity: "common" },
-  { label: "Whale Alert", color: "#00cc6a", rarity: "uncommon" },
-  { label: "Legendary Degen", color: "#ffd700", rarity: "legendary" },
-  { label: "Rug Survivor", color: "#00ff88", rarity: "uncommon" },
+  { label: "Diamond Hands", rarity: "common" },
+  { label: "1000x Incoming", rarity: "common" },
+  { label: "WAGMI", rarity: "common" },
+  { label: "Trench Veteran", rarity: "uncommon" },
+  { label: "Ansem Approved", rarity: "rare" },
+  { label: "Paper Hands", rarity: "common" },
+  { label: "To The Moon", rarity: "common" },
+  { label: "Chad Status", rarity: "rare" },
+  { label: "NGMI", rarity: "common" },
+  { label: "Whale Alert", rarity: "uncommon" },
+  { label: "Legendary Degen", rarity: "legendary" },
+  { label: "Rug Survivor", rarity: "uncommon" },
 ];
 
 const RARITY_COLORS: Record<string, string> = {
@@ -31,6 +31,28 @@ const RARITY_BG: Record<string, string> = {
   legendary: "border-yellow-400/40 shadow-[0_0_30px_rgba(255,215,0,0.2)]",
 };
 
+const RARITY_FILL: Record<string, string> = {
+  common: "#9ca3af",
+  uncommon: "#00ff88",
+  rare: "#60a5fa",
+  legendary: "#ffd700",
+};
+
+const NUM = SEGMENTS.length;
+const SEG_ANGLE = 360 / NUM;
+
+function polarToCart(cx: number, cy: number, r: number, angleDeg: number) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function describeArc(cx: number, cy: number, r: number, startAngle: number, endAngle: number) {
+  const start = polarToCart(cx, cy, r, endAngle);
+  const end = polarToCart(cx, cy, r, startAngle);
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y} Z`;
+}
+
 export default function SpinWheel() {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -45,7 +67,6 @@ export default function SpinWheel() {
     }
   });
   const [showCollection, setShowCollection] = useState(false);
-  const wheelRef = useRef<HTMLDivElement>(null);
 
   function spin() {
     if (spinning) return;
@@ -55,9 +76,9 @@ export default function SpinWheel() {
     setResult(null);
 
     const extraSpins = 5 + Math.random() * 3;
-    const segmentAngle = 360 / SEGMENTS.length;
-    const targetSegment = Math.floor(Math.random() * SEGMENTS.length);
-    const targetAngle = 360 - targetSegment * segmentAngle - segmentAngle / 2;
+    const targetSegment = Math.floor(Math.random() * NUM);
+    // The pointer is at the top (12 o'clock). We need the middle of the target segment to land there.
+    const targetAngle = 360 - (targetSegment * SEG_ANGLE + SEG_ANGLE / 2);
     const totalRotation = rotation + extraSpins * 360 + targetAngle;
 
     setRotation(totalRotation);
@@ -67,7 +88,6 @@ export default function SpinWheel() {
       setResult(SEGMENTS[targetSegment]);
       setShowResult(true);
 
-      // Add to collection if not already there
       const label = SEGMENTS[targetSegment].label;
       setCollection((prev) => {
         const next = prev.includes(label) ? prev : [...prev, label];
@@ -77,74 +97,81 @@ export default function SpinWheel() {
     }, 4000);
   }
 
-  const segmentAngle = 360 / SEGMENTS.length;
+  const SIZE = 320;
+  const CX = SIZE / 2;
+  const CY = SIZE / 2;
+  const R = SIZE / 2 - 4;
+  const TEXT_R = R * 0.65;
 
   return (
     <div className="max-w-3xl mx-auto relative z-10 text-center">
       <div className="relative inline-block mb-8">
         {/* Pointer */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-20">
           <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-chad-green drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]" />
         </div>
 
         {/* Wheel */}
         <div
-          ref={wheelRef}
-          className="w-64 h-64 sm:w-80 sm:h-80 rounded-full relative border-4 border-chad-green/30 shadow-[0_0_40px_rgba(0,255,136,0.1)]"
+          className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px]"
           style={{
             transform: `rotate(${rotation}deg)`,
             transition: spinning ? "transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)" : "none",
           }}
         >
-          {SEGMENTS.map((seg, i) => {
-            const startAngle = i * segmentAngle;
-            const endAngle = (i + 1) * segmentAngle;
-            const midAngle = ((startAngle + endAngle) / 2) * (Math.PI / 180);
-            const isEven = i % 2 === 0;
+          <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full h-full">
+            {/* Outer ring */}
+            <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(0,255,136,0.2)" strokeWidth="3" />
 
-            return (
-              <div key={i}>
-                {/* Segment background using conic gradient */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `conic-gradient(from ${startAngle}deg, ${
-                      isEven ? "#12121a" : "#1a1a28"
-                    } 0deg, ${isEven ? "#12121a" : "#1a1a28"} ${segmentAngle}deg, transparent ${segmentAngle}deg)`,
-                    borderRadius: "50%",
-                  }}
-                />
-                {/* Segment label */}
-                <div
-                  className="absolute text-[8px] sm:text-[10px] font-bold whitespace-nowrap"
-                  style={{
-                    left: `${50 + 32 * Math.cos(midAngle)}%`,
-                    top: `${50 + 32 * Math.sin(midAngle)}%`,
-                    transform: `translate(-50%, -50%) rotate(${(startAngle + endAngle) / 2 + 90}deg)`,
-                    color: seg.rarity === "legendary" ? "#ffd700" : seg.rarity === "rare" ? "#60a5fa" : "#9ca3af",
-                  }}
-                >
-                  {seg.label}
-                </div>
-                {/* Divider line */}
-                <div
-                  className="absolute top-1/2 left-1/2 h-[1px] origin-left"
-                  style={{
-                    width: "50%",
-                    transform: `rotate(${startAngle}deg)`,
-                    background: "rgba(0, 255, 136, 0.15)",
-                  }}
-                />
-              </div>
-            );
-          })}
+            {SEGMENTS.map((seg, i) => {
+              const startAngle = i * SEG_ANGLE;
+              const endAngle = (i + 1) * SEG_ANGLE;
+              const midAngle = startAngle + SEG_ANGLE / 2;
+              const isEven = i % 2 === 0;
 
-          {/* Center circle */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-chad-dark border-2 border-chad-green/30 flex items-center justify-center z-10">
-              <span className="text-chad-green font-black text-xs sm:text-sm">SPIN</span>
-            </div>
-          </div>
+              // Text position
+              const textPos = polarToCart(CX, CY, TEXT_R, midAngle);
+
+              return (
+                <g key={i}>
+                  {/* Segment slice */}
+                  <path
+                    d={describeArc(CX, CY, R, startAngle, endAngle)}
+                    fill={isEven ? "#12121a" : "#1a1a2a"}
+                    stroke="rgba(0,255,136,0.12)"
+                    strokeWidth="0.5"
+                  />
+                  {/* Label */}
+                  <text
+                    x={textPos.x}
+                    y={textPos.y}
+                    fill={RARITY_FILL[seg.rarity]}
+                    fontSize="9"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    transform={`rotate(${midAngle}, ${textPos.x}, ${textPos.y})`}
+                  >
+                    {seg.label}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Center circle */}
+            <circle cx={CX} cy={CY} r="32" fill="#0a0a0f" stroke="rgba(0,255,136,0.3)" strokeWidth="2" />
+            <text
+              x={CX}
+              y={CY}
+              fill="#00ff88"
+              fontSize="11"
+              fontWeight="900"
+              textAnchor="middle"
+              dominantBaseline="central"
+            >
+              SPIN
+            </text>
+          </svg>
         </div>
       </div>
 
@@ -174,9 +201,6 @@ export default function SpinWheel() {
           <p className={`text-xl font-black ${RARITY_COLORS[result.rarity]}`}>
             {result.label}
           </p>
-          {!collection.includes(result.label) && (
-            <p className="text-xs text-chad-green mt-1">New badge unlocked!</p>
-          )}
         </div>
       )}
 
@@ -186,7 +210,7 @@ export default function SpinWheel() {
           onClick={() => setShowCollection(!showCollection)}
           className="text-sm text-gray-500 hover:text-chad-green transition-colors"
         >
-          Collection: {collection.length}/{SEGMENTS.length} badges{" "}
+          Collection: {collection.length}/{NUM} badges{" "}
           {showCollection ? "\u25B2" : "\u25BC"}
         </button>
 
