@@ -1,119 +1,418 @@
-import Link from "next/link";
+"use client";
 
-const features = [
-  {
-    href: "/reddit-scanner",
-    title: "Reddit Pain Point Scanner",
-    description: "Discover unmet needs by scanning Reddit for frustrations, wishes, and complaints in any niche.",
-    gradient: "from-orange-500 to-red-500",
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-      </svg>
-    ),
-  },
-  {
-    href: "/business-scanner",
-    title: "Business Scanner",
-    description: "Find local businesses without websites — perfect for web design & digital marketing agencies.",
-    gradient: "from-emerald-500 to-teal-500",
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
-  },
-  {
-    href: "/product-finder",
-    title: "Product Trend Finder",
-    description: "Identify trending products with high profit potential for dropshipping and e-commerce.",
-    gradient: "from-cyan-500 to-blue-500",
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-      </svg>
-    ),
-  },
-  {
-    href: "/course-finder",
-    title: "Digital Course Finder",
-    description: "Discover high-demand topics where people are looking to learn but supply is limited.",
-    gradient: "from-purple-500 to-pink-500",
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>
-    ),
-  },
-];
+import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+const CA = "HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
+const PUMP_URL = "https://pump.fun/coin/HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
+const TWITTER_URL = "https://x.com/ChadsemCoin";
+
+interface TokenStats {
+  priceUsd: string | null;
+  marketCap: number | null;
+  volume24h: number | null;
+  liquidity: number | null;
+  priceChange24h: number | null;
+  holders: number | null;
+}
+
+function formatNumber(n: number | null): string {
+  if (n === null) return "—";
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(2)}K`;
+  return `$${n.toFixed(2)}`;
+}
+
+function formatPrice(p: string | null): string {
+  if (!p) return "—";
+  const num = parseFloat(p);
+  if (num < 0.0001) return `$${num.toExponential(2)}`;
+  if (num < 1) return `$${num.toFixed(6)}`;
+  return `$${num.toFixed(4)}`;
+}
+
+export default function Home() {
+  const [stats, setStats] = useState<TokenStats>({
+    priceUsd: null,
+    marketCap: null,
+    volume24h: null,
+    liquidity: null,
+    priceChange24h: null,
+    holders: null,
+  });
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch(
+          `https://api.dexscreener.com/latest/dex/tokens/${CA}`
+        );
+        const data = await res.json();
+        if (data.pairs && data.pairs.length > 0) {
+          const pair = data.pairs[0];
+          setStats({
+            priceUsd: pair.priceUsd,
+            marketCap: pair.marketCap ?? pair.fdv ?? null,
+            volume24h: pair.volume?.h24 ?? null,
+            liquidity: pair.liquidity?.usd ?? null,
+            priceChange24h: pair.priceChange?.h24 ?? null,
+            holders: null,
+          });
+        }
+      } catch {
+        // silently fail — stats just show dashes
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  function copyCA() {
+    navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Hero */}
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-3">
-          <span className="gradient-text">Discover Business Opportunities</span>
-        </h1>
-        <p className="text-dark-400 text-lg max-w-2xl">
-          Use AI to scan real data sources and uncover untapped markets, unmet needs, and profitable niches.
-        </p>
-      </div>
-
-      {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {features.map((feature) => (
-          <Link
-            key={feature.href}
-            href={feature.href}
-            className="glass rounded-2xl p-6 glass-hover transition-all duration-300 group block"
+    <div className="min-h-screen bg-chad-dark">
+      {/* Nav */}
+      <nav className="fixed top-0 w-full z-50 bg-chad-dark/80 backdrop-blur-md border-b border-chad-border">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="text-xl font-bold text-chad-gold">$CHADSEM</span>
+          <div className="hidden sm:flex gap-6 text-sm text-gray-400">
+            <a href="#about" className="hover:text-chad-gold transition-colors">
+              About
+            </a>
+            <a href="#stats" className="hover:text-chad-gold transition-colors">
+              Stats
+            </a>
+            <a
+              href="#tokenomics"
+              className="hover:text-chad-gold transition-colors"
+            >
+              Purpose
+            </a>
+            <a href="#links" className="hover:text-chad-gold transition-colors">
+              Links
+            </a>
+          </div>
+          <a
+            href={TWITTER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm px-4 py-2 bg-chad-gold/10 text-chad-gold border border-chad-gold/30 rounded-lg hover:bg-chad-gold/20 transition-all"
           >
-            <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4 opacity-80 group-hover:opacity-100 transition-opacity`}>
-              {feature.icon}
-            </div>
-            <h2 className="text-lg font-semibold text-white mb-2 group-hover:gradient-text transition-all">
-              {feature.title}
-            </h2>
-            <p className="text-sm text-dark-400 leading-relaxed">
-              {feature.description}
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-dark-500 group-hover:text-accent-blue transition-colors">
-              Get started
-              <svg className="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
-        ))}
-      </div>
+            Twitter
+          </a>
+        </div>
+      </nav>
 
-      {/* Stats/Info */}
-      <div className="glass rounded-2xl p-6">
-        <h3 className="text-sm font-semibold text-white mb-4">Quick Start</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-start gap-3">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-blue/10 text-accent-blue text-sm font-bold shrink-0">1</span>
-            <div>
-              <p className="text-sm text-white font-medium">Add API Keys</p>
-              <p className="text-xs text-dark-500">Configure OpenAI + Reddit keys in Settings</p>
-            </div>
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center justify-center pt-20 px-6">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-chad-gold/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] bg-chad-orange/5 rounded-full blur-[100px]" />
+        </div>
+
+        <div className="relative z-10 text-center max-w-4xl mx-auto">
+          <div className="mx-auto mb-8 w-40 h-40 rounded-full bg-chad-card border-2 border-chad-gold/30 flex items-center justify-center animate-float card-glow">
+            <span className="text-5xl">🗿</span>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-purple/10 text-accent-purple text-sm font-bold shrink-0">2</span>
-            <div>
-              <p className="text-sm text-white font-medium">Pick a Scanner</p>
-              <p className="text-xs text-dark-500">Choose a tool based on your business model</p>
-            </div>
+
+          <h1 className="text-6xl sm:text-8xl font-black tracking-tight mb-4 text-glow">
+            <span className="text-chad-gold">$CHAD</span>
+            <span className="text-white">SEM</span>
+          </h1>
+
+          <p className="text-xl sm:text-2xl text-gray-400 mb-2 font-medium">
+            From the trenches to the top.
+          </p>
+          <p className="text-sm text-gray-500 mb-10 max-w-lg mx-auto">
+            The community memecoin honoring the king of Solana calls. Built by
+            degens, for degens.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <a
+              href={TWITTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-chad-gold text-black font-bold rounded-xl hover:bg-chad-gold/90 transition-all text-lg"
+            >
+              Follow on Twitter
+            </a>
+            <a
+              href={PUMP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-chad-card border border-chad-border text-white font-bold rounded-xl hover:border-chad-gold/40 transition-all text-lg"
+            >
+              Buy on Pump.fun
+            </a>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent-emerald/10 text-accent-emerald text-sm font-bold shrink-0">3</span>
-            <div>
-              <p className="text-sm text-white font-medium">Get AI Insights</p>
-              <p className="text-xs text-dark-500">AI analyzes real data and scores opportunities</p>
+
+          {/* CA in hero */}
+          <button
+            onClick={copyCA}
+            className="inline-flex items-center gap-2 bg-chad-card rounded-xl px-6 py-3 border-glow hover:border-chad-gold/40 transition-all cursor-pointer group"
+          >
+            <span className="text-xs text-gray-500">CA:</span>
+            <span className="text-chad-gold font-mono text-xs sm:text-sm truncate max-w-[280px] sm:max-w-none">
+              {CA}
+            </span>
+            <span className="text-gray-500 group-hover:text-chad-gold transition-colors text-xs">
+              {copied ? "Copied!" : "Copy"}
+            </span>
+          </button>
+        </div>
+      </section>
+
+      {/* Live Stats */}
+      <section id="stats" className="py-24 px-6 bg-chad-card/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            Live <span className="text-chad-gold">Stats</span>
+          </h2>
+          <p className="text-gray-500 mb-2 text-lg">
+            Real-time data from DexScreener
+          </p>
+          <p className="text-gray-600 text-xs mb-12">
+            Auto-refreshes every 30 seconds
+          </p>
+
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-chad-dark rounded-2xl p-6 border-glow animate-pulse"
+                >
+                  <div className="h-4 bg-gray-800 rounded w-20 mx-auto mb-3" />
+                  <div className="h-8 bg-gray-800 rounded w-28 mx-auto" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-chad-dark rounded-2xl p-6 border-glow">
+                <p className="text-gray-500 text-sm mb-2">Price</p>
+                <p className="text-white text-2xl font-bold">
+                  {formatPrice(stats.priceUsd)}
+                </p>
+                {stats.priceChange24h !== null && (
+                  <p
+                    className={`text-sm mt-1 font-medium ${
+                      stats.priceChange24h >= 0
+                        ? "text-chad-green"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {stats.priceChange24h >= 0 ? "+" : ""}
+                    {stats.priceChange24h.toFixed(2)}% (24h)
+                  </p>
+                )}
+              </div>
+              <div className="bg-chad-dark rounded-2xl p-6 border-glow">
+                <p className="text-gray-500 text-sm mb-2">Market Cap</p>
+                <p className="text-white text-2xl font-bold">
+                  {formatNumber(stats.marketCap)}
+                </p>
+              </div>
+              <div className="bg-chad-dark rounded-2xl p-6 border-glow">
+                <p className="text-gray-500 text-sm mb-2">24h Volume</p>
+                <p className="text-white text-2xl font-bold">
+                  {formatNumber(stats.volume24h)}
+                </p>
+              </div>
+              <div className="bg-chad-dark rounded-2xl p-6 border-glow">
+                <p className="text-gray-500 text-sm mb-2">Liquidity</p>
+                <p className="text-white text-2xl font-bold">
+                  {formatNumber(stats.liquidity)}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <a
+            href={`https://dexscreener.com/solana/${CA}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-8 text-sm text-chad-gold/70 hover:text-chad-gold transition-colors"
+          >
+            View on DexScreener &rarr;
+          </a>
+        </div>
+      </section>
+
+      {/* About */}
+      <section id="about" className="py-24 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl font-black mb-4 text-center">
+            Who is <span className="text-chad-gold">Ansem</span>?
+          </h2>
+          <p className="text-gray-500 text-center mb-12 text-lg">
+            @blknoiz06 — The legend behind the calls
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-chad-card rounded-2xl p-8 border-glow card-glow">
+              <h3 className="text-chad-gold font-bold text-lg mb-3">
+                The Trench King
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Ansem (@blknoiz06) became one of the most influential voices in
+                crypto Twitter. Known for his early Solana calls and fearless
+                market takes, he built a massive following of degens who trusted
+                his vision when no one else was paying attention.
+              </p>
+            </div>
+            <div className="bg-chad-card rounded-2xl p-8 border-glow card-glow">
+              <h3 className="text-chad-gold font-bold text-lg mb-3">
+                Community Builder
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                While others chased hype, Ansem stayed in the trenches. He
+                shared alpha, called bottoms, and helped countless community
+                members navigate the chaos of crypto. His dedication to the
+                culture made him a legend.
+              </p>
+            </div>
+            <div className="md:col-span-2 bg-chad-card rounded-2xl p-8 border-glow card-glow">
+              <h3 className="text-chad-gold font-bold text-lg mb-3">
+                Why $CHADSEM?
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                $CHADSEM is a tribute to everything Ansem represents — the grit,
+                the calls, the community. This isn&apos;t just another memecoin.
+                It&apos;s a movement built by the people who were in the
+                trenches, for the people who understand what it means to hold
+                through the noise. No VC backing, no insider deals — just pure,
+                unfiltered community energy.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Tokenomics / Purpose */}
+      <section id="tokenomics" className="py-24 px-6 bg-chad-card/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            Pure <span className="text-chad-gold">Market Presence</span>
+          </h2>
+          <p className="text-gray-500 mb-16 text-lg max-w-2xl mx-auto">
+            No roadmap fluff. No empty promises. Just community and culture.
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-6">
+            <div className="bg-chad-dark rounded-2xl p-8 border-glow">
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="text-white font-bold text-lg mb-2">
+                Community Driven
+              </h3>
+              <p className="text-gray-500 text-sm">
+                No team tokens. No dev allocation. 100% for the people in the
+                trenches.
+              </p>
+            </div>
+            <div className="bg-chad-dark rounded-2xl p-8 border-glow">
+              <div className="text-4xl mb-4">🔥</div>
+              <h3 className="text-white font-bold text-lg mb-2">No Fluff</h3>
+              <p className="text-gray-500 text-sm">
+                We don&apos;t need a 50-page whitepaper. The culture speaks for
+                itself.
+              </p>
+            </div>
+            <div className="bg-chad-dark rounded-2xl p-8 border-glow">
+              <div className="text-4xl mb-4">📈</div>
+              <h3 className="text-white font-bold text-lg mb-2">
+                Market Energy
+              </h3>
+              <p className="text-gray-500 text-sm">
+                Built on Solana. Fast, cheap, and ready for the next wave.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Links / Community */}
+      <section id="links" className="py-24 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            Join the <span className="text-chad-gold">Movement</span>
+          </h2>
+          <p className="text-gray-500 mb-12 text-lg">
+            Get in before the rest figure it out.
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-6 mb-12">
+            <a
+              href={TWITTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-chad-card rounded-2xl p-8 border-glow hover:border-chad-gold/40 transition-all group"
+            >
+              <div className="text-3xl mb-3">𝕏</div>
+              <h3 className="text-white font-bold mb-1 group-hover:text-chad-gold transition-colors">
+                Twitter
+              </h3>
+              <p className="text-gray-500 text-sm">@ChadsemCoin</p>
+            </a>
+            <a
+              href={PUMP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-chad-card rounded-2xl p-8 border-glow hover:border-chad-gold/40 transition-all group"
+            >
+              <div className="text-3xl mb-3">🚀</div>
+              <h3 className="text-white font-bold mb-1 group-hover:text-chad-gold transition-colors">
+                Pump.fun
+              </h3>
+              <p className="text-gray-500 text-sm">Buy Now</p>
+            </a>
+            <button
+              onClick={copyCA}
+              className="bg-chad-card rounded-2xl p-8 border-glow hover:border-chad-gold/40 transition-all group text-left"
+            >
+              <div className="text-3xl mb-3">📋</div>
+              <h3 className="text-white font-bold mb-1 group-hover:text-chad-gold transition-colors">
+                Contract Address
+              </h3>
+              <p className="text-gray-500 text-xs font-mono truncate">
+                {copied ? "Copied!" : CA}
+              </p>
+            </button>
+          </div>
+
+          {/* CA display box */}
+          <button
+            onClick={copyCA}
+            className="inline-block bg-chad-card rounded-xl px-8 py-4 border-glow hover:border-chad-gold/40 transition-all cursor-pointer"
+          >
+            <p className="text-sm text-gray-500 mb-1">CA (click to copy)</p>
+            <p className="text-chad-gold font-mono font-bold tracking-wide text-xs sm:text-sm break-all">
+              {copied ? "Copied to clipboard!" : CA}
+            </p>
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-6 border-t border-chad-border text-center">
+        <p className="text-gray-600 text-sm">
+          $CHADSEM is a community memecoin with no intrinsic value or
+          expectation of financial return. For entertainment purposes only.
+        </p>
+        <p className="text-gray-700 text-xs mt-2">
+          &copy; 2025 $CHADSEM Community
+        </p>
+      </footer>
     </div>
   );
 }
