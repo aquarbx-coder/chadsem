@@ -129,8 +129,11 @@ export default function SpinWheel() {
               const midAngle = startAngle + SEG_ANGLE / 2;
               const isEven = i % 2 === 0;
 
-              // Text position
+              // Text runs radially — position along the middle of the segment,
+              // rotated so it reads from center outward
               const textPos = polarToCart(CX, CY, TEXT_R, midAngle);
+              // Rotate text so it points outward along the radius
+              const textRotation = midAngle;
 
               return (
                 <g key={i}>
@@ -141,16 +144,16 @@ export default function SpinWheel() {
                     stroke="rgba(0,255,136,0.12)"
                     strokeWidth="0.5"
                   />
-                  {/* Label */}
+                  {/* Label — rotated radially so text runs outward from center */}
                   <text
-                    x={textPos.x}
-                    y={textPos.y}
+                    x={CX}
+                    y={CY - TEXT_R}
                     fill={RARITY_FILL[seg.rarity]}
-                    fontSize="9"
+                    fontSize="8"
                     fontWeight="bold"
                     textAnchor="middle"
                     dominantBaseline="central"
-                    transform={`rotate(${midAngle}, ${textPos.x}, ${textPos.y})`}
+                    transform={`rotate(${midAngle}, ${CX}, ${CY})`}
                   >
                     {seg.label}
                   </text>
