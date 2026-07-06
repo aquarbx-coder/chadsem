@@ -14,9 +14,9 @@ const AnimatedCounter = dynamic(() => import("./components/AnimatedCounter"), { 
 const HoverGrid = dynamic(() => import("./components/HoverGrid"), { ssr: false });
 import { useConfetti } from "./components/ConfettiBurst";
 
-const CA = "HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
+const CA = "7seK94texcZRFeLto8DfDsZduZVrp6x3Lea4Y4M9pump";
 const PUMP_URL =
-  "https://pump.fun/coin/HTW3Q9CxmwTKVQfQCVLiXf1D3bx55WRAn21GRC9Dpump";
+  "https://pump.fun/coin/7seK94texcZRFeLto8DfDsZduZVrp6x3Lea4Y4M9pump";
 const TWITTER_URL = "https://x.com/ChadsemCoin";
 
 interface TokenStats {
