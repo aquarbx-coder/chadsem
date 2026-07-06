@@ -168,40 +168,42 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 bg-chad-dark/90 backdrop-blur-md border-b border-chad-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <span className="text-xl font-bold text-shimmer">$CHADSEM</span>
-          <div className="hidden sm:flex gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-6">
+            <div className="hidden sm:flex gap-6 text-sm text-gray-400">
+              <a
+                href="#about"
+                className="hover:text-chad-green transition-colors"
+              >
+                About
+              </a>
+              <a
+                href="#stats"
+                className="hover:text-chad-green transition-colors"
+              >
+                Stats
+              </a>
+              <a
+                href="#tokenomics"
+                className="hover:text-chad-green transition-colors"
+              >
+                Purpose
+              </a>
+              <a
+                href="#links"
+                className="hover:text-chad-green transition-colors"
+              >
+                Links
+              </a>
+            </div>
             <a
-              href="#about"
-              className="hover:text-chad-green transition-colors"
+              href={TWITTER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm px-4 py-2 bg-chad-green/10 text-chad-green border border-chad-green/30 rounded-lg hover:bg-chad-green/20 transition-all"
             >
-              About
-            </a>
-            <a
-              href="#stats"
-              className="hover:text-chad-green transition-colors"
-            >
-              Stats
-            </a>
-            <a
-              href="#tokenomics"
-              className="hover:text-chad-green transition-colors"
-            >
-              Purpose
-            </a>
-            <a
-              href="#links"
-              className="hover:text-chad-green transition-colors"
-            >
-              Links
+              X
             </a>
           </div>
-          <a
-            href={TWITTER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm px-4 py-2 bg-chad-green/10 text-chad-green border border-chad-green/30 rounded-lg hover:bg-chad-green/20 transition-all"
-          >
-            X
-          </a>
         </div>
       </nav>
 
@@ -221,13 +223,13 @@ export default function Home() {
           <img
             src="/mascot.png"
             alt="CHADSEM Mascot"
-            className="animate-sway w-[420px] xl:w-[500px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.15)]"
+            className="animate-sway w-[480px] xl:w-[560px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.15)]"
           />
         </div>
 
         <div className="relative z-10 text-center max-w-4xl mx-auto lg:text-left lg:mr-auto lg:ml-[8%] xl:ml-[12%]">
           {/* Mobile mascot */}
-          <div className="lg:hidden mx-auto mb-8 w-56 h-56 animate-fade-scale">
+          <div className="lg:hidden mx-auto mb-8 w-64 h-64 animate-fade-scale">
             <img
               src="/mascot.png"
               alt="CHADSEM Mascot"
