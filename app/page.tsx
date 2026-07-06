@@ -220,7 +220,7 @@ export default function Home() {
             <img
               src="/mascot.png"
               alt="CHADSEM Mascot"
-              className="relative z-10 animate-sway w-[540px] xl:w-[620px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.3)]"
+              className="relative z-10 animate-sway w-[620px] xl:w-[720px] h-auto drop-shadow-[0_0_60px_rgba(0,255,136,0.3)]"
             />
             {/* Ground glow */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-8 bg-chad-green/20 rounded-full blur-xl aura-ground" />
@@ -229,7 +229,7 @@ export default function Home() {
 
         <div className="relative z-10 text-center max-w-4xl mx-auto lg:text-left lg:mr-auto lg:ml-[8%] xl:ml-[12%]">
           {/* Mobile mascot with super saiyan aura */}
-          <div className="lg:hidden mx-auto mb-8 w-72 h-72 animate-fade-scale">
+          <div className="lg:hidden mx-auto mb-8 w-80 h-80 animate-fade-scale">
             <div className="relative w-full h-full">
               <div className="absolute inset-0 -inset-x-8 -top-10 aura-outer rounded-full" />
               <div className="absolute inset-0 -inset-x-5 -top-6 aura-mid rounded-full" />
