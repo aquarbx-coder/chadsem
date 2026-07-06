@@ -8,12 +8,15 @@ const config: Config = {
     extend: {
       colors: {
         chad: {
-          gold: "#f5a623",
-          orange: "#ff6b35",
           green: "#00ff88",
+          "green-dark": "#00cc6a",
+          accent: "#00e07a",
           dark: "#0a0a0f",
+          darker: "#060609",
           card: "#12121a",
+          "card-alt": "#161622",
           border: "#1e1e2e",
+          "border-light": "#2a2a3e",
         },
       },
       animation: {
