@@ -203,7 +203,7 @@ export default function Home() {
         </div>
 
         {/* Desktop mascot with super saiyan aura */}
-        <div className="hidden lg:block absolute right-[5%] xl:right-[10%] bottom-0 z-10 pointer-events-none">
+        <div className="hidden lg:block absolute -right-[8%] xl:-right-[4%] bottom-0 z-10 pointer-events-none">
           <div className="relative">
             {/* Aura layers */}
             <div className="absolute inset-0 -inset-x-16 -top-20 aura-outer rounded-full" />
